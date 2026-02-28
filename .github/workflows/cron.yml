@@ -1,0 +1,17 @@
+name: 5-Minute Cron Job
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Call Vercel API
+      run: |
+        curl -X GET "https://shot-oc-lock.vercel.app/api/cron" \
+        -H "Authorization: Bearer supersecretcron123"
