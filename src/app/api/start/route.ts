@@ -1,44 +1,54 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// Helper function to get random minutes between 20 and 40
-function getRandomInterval() {
-    const min = 20;
-    const max = 40;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+interface PhoneEntry {
+    phone: string;
+    carrier: string;
+}
+
+// Returns a random interval in minutes centered around (60 / pingsPerHour)
+// with ±40% variance to keep it unpredictable
+function getRandomInterval(pingsPerHour: number): number {
+    const avgMinutes = 60 / pingsPerHour;
+    const variance = avgMinutes * 0.4; // ±40%
+    return avgMinutes - variance + Math.random() * variance * 2;
 }
 
 export async function POST(req: Request) {
     try {
-        const { phone, carrier } = await req.json();
+        const { phones, pingsPerHour, totalHours } = await req.json() as {
+            phones: PhoneEntry[];
+            pingsPerHour: number;
+            totalHours: number;
+        };
 
-        if (!phone || !carrier) {
-            return NextResponse.json({ error: 'Missing phone or carrier' }, { status: 400 });
+        if (!phones || phones.length === 0) {
+            return NextResponse.json({ error: 'Missing phone numbers' }, { status: 400 });
         }
 
-        // Determine the next shot time
-        const minutesDelay = getRandomInterval();
-        const nextShotTime = new Date(Date.now() + minutesDelay * 60000);
+        const shotsRemaining = Math.round(pingsPerHour * totalHours);
 
-        const { data, error } = await supabase
-            .from('marathons')
-            .insert([
-                {
-                    phone_number: phone,
-                    carrier_gateway: carrier,
-                    status: 'active',
-                    shots_remaining: 10,  // Standard 5-hour marathon: ~10 shots
-                    next_shot_time: nextShotTime.toISOString(),
-                }
-            ])
-            .select();
+        // Insert one row per phone number, each with their own random first interval
+        const inserts = phones.map(({ phone, carrier }) => {
+            const minutesDelay = getRandomInterval(pingsPerHour);
+            const nextShotTime = new Date(Date.now() + minutesDelay * 60000);
+            return {
+                phone_number: phone,
+                carrier_gateway: carrier,
+                status: 'active',
+                shots_remaining: shotsRemaining,
+                next_shot_time: nextShotTime.toISOString(),
+            };
+        });
 
+        const { error } = await supabase.from('marathons').insert(inserts);
         if (error) throw error;
 
         return NextResponse.json({
             success: true,
-            message: 'Marathon started!',
-            first_interval_minutes: minutesDelay
+            message: `Marathon started for ${phones.length} number(s)!`,
+            total_shots: shotsRemaining,
+            avg_interval_minutes: Math.round(60 / pingsPerHour),
         });
 
     } catch (err) {

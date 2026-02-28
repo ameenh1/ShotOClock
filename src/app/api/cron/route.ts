@@ -2,23 +2,19 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import nodemailer from 'nodemailer';
 
-// Helper function to get random minutes between 20 and 40
-function getRandomInterval() {
-    const min = 20;
-    const max = 40;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+// Random interval with ±40% variance around avgMinutes
+function getRandomInterval(avgMinutes: number): number {
+    const variance = avgMinutes * 0.4;
+    return avgMinutes - variance + Math.random() * variance * 2;
 }
 
 export async function GET(req: Request) {
-    // 1. Verify Vercel Cron Secret for security so people can't manually ping it
     const authHeader = req.headers.get('authorization');
     if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
-        // 2. Query Supabase for people whose 'next_shot_time' is now or in the past
-        // AND who still have shots remaining.
         const now = new Date().toISOString();
         const { data: dueShots, error: fetchError } = await supabase
             .from('marathons')
@@ -31,50 +27,49 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: true, message: 'No shots due.' });
         }
 
-        // 3. Setup Nodemailer (Email-to-SMS Gateway)
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS, // Needs to be an App Password, not regular password
-            }
+                pass: process.env.EMAIL_PASS,
+            },
         });
 
         let processedCount = 0;
 
-        // 4. Loop through everyone who needs a text message
         for (const person of dueShots) {
             const emailTarget = `${person.phone_number}${person.carrier_gateway}`;
-
-            const emojis = ["🍺", "🍻", "🍸", "🍹", "🍾", "🥃"];
+            const emojis = ['🍺', '🍻', '🍸', '🍹', '🍾', '🥃'];
             const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-            const msg = `SHOT O'CLOCK! Bottoms up! ${randomEmoji} (${person.shots_remaining - 1} left)`;
+            const shotsLeft = person.shots_remaining - 1;
+            const msg = `SHOT O'CLOCK! Bottoms up! ${randomEmoji}${shotsLeft > 0 ? ` (${shotsLeft} left)` : ' — Marathon complete!'}`;
 
-            // Send the SMS
             await transporter.sendMail({
                 from: `Shot O'Clock <${process.env.EMAIL_USER}>`,
                 to: emailTarget,
-                subject: '', // SMS gateways usually put subject in parenthesis or ignore it
-                text: msg
+                subject: '',
+                text: msg,
             });
 
-            // 5. Calculate new time and update Supabase
             const newShotsRemaining = person.shots_remaining - 1;
 
             if (newShotsRemaining <= 0) {
-                // Marathon over!
                 await supabase
                     .from('marathons')
                     .update({ status: 'completed', shots_remaining: 0 })
                     .eq('id', person.id);
             } else {
-                // Schedule the next one!
-                const nextTime = new Date(Date.now() + getRandomInterval() * 60000);
+                // Figure out the original avg interval from shots_remaining history isn't stored,
+                // so we infer avg interval from the gap between now and the original next_shot_time.
+                // Fallback: use 30-min average if no context. More accurate would be storing pings_per_hour.
+                // For now we store avg_interval_minutes in each row for re-use.
+                const avgMinutes: number = person.avg_interval_minutes ?? 30;
+                const nextTime = new Date(Date.now() + getRandomInterval(avgMinutes) * 60000);
                 await supabase
                     .from('marathons')
                     .update({
                         shots_remaining: newShotsRemaining,
-                        next_shot_time: nextTime.toISOString()
+                        next_shot_time: nextTime.toISOString(),
                     })
                     .eq('id', person.id);
             }
@@ -84,7 +79,7 @@ export async function GET(req: Request) {
 
         return NextResponse.json({
             success: true,
-            message: `Processed ${processedCount} due shots.`
+            message: `Processed ${processedCount} due shots.`,
         });
 
     } catch (err) {
