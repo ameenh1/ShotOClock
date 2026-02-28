@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0b0c10;
+  --foreground: #66fcf1;
+  --panel-bg: #1f2833;
+  --text-main: #66fcf1;
+  --text-muted: #45a29e;
+  --accent: #ff007f;
+  --liquid-color: #39ff14;
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.pixel-cup {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 6px solid #fff;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pixel-cup::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  height: 6px;
+  background-color: #fff;
+  z-index: 2;
+}
+
+.cup-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  /* animates to 100% */
+  background-color: var(--liquid-color);
+  transition: height 2s cubic-bezier(0.1, 0.8, 0.2, 1);
+  box-shadow: inset 0 10px 0 rgba(255, 255, 255, 0.3);
+}
+
+.cup-liquid.fill {
+  height: 90%;
+}
+
+.cup-highlight {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 10px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.4);
+  z-index: 1;
+}
+
+.status-blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-main);
 }

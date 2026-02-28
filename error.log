@@ -1,0 +1,36 @@
+[33m[1m⚠[22m[39m Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\AH01\Coding Projects\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\AH01\Coding Projects\ShotOClock\package-lock.json
+
+Error: supabaseUrl is required.
+    at <unknown> [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:43440[90m)[39m
+    at new ri [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:43691[90m)[39m
+    at module evaluation [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:48029[90m)[39m
+    at instantiateModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:740:9[90m)[39m
+    at getOrInstantiateModuleFromParent [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:763:12[90m)[39m
+    at Context.esmImport [as i] [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:228:20[90m)[39m
+    at module evaluation [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[root-of-the-server]__e606afc6._.js:1:218487[90m)[39m
+    at instantiateModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:740:9[90m)[39m
+    at instantiateRuntimeModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:768:12[90m)[39m
+    at getOrInstantiateRuntimeModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:781:12[90m)[39m
+Error: supabaseUrl is required.
+    at <unknown> [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:43440[90m)[39m
+    at new ri [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:43691[90m)[39m
+    at module evaluation [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\ShotOClock_src_lib_supabase_ts_2216ac43._.js:37:48029[90m)[39m
+    at instantiateModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:740:9[90m)[39m
+    at getOrInstantiateModuleFromParent [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:763:12[90m)[39m
+    at Context.esmImport [as i] [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:228:20[90m)[39m
+    at module evaluation [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[root-of-the-server]__0f177e55._.js:1:1268[90m)[39m
+    at instantiateModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:740:9[90m)[39m
+    at instantiateRuntimeModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:768:12[90m)[39m
+    at getOrInstantiateRuntimeModule [90m(C:\Users\AH01\Coding Projects\ShotOClock\[39m.next\server\chunks\[turbopack]_runtime.js:781:12[90m)[39m
+
+> Build error occurred
+Error: Failed to collect page data for /api/cron
+    at [3mignore-listed frames[23m {
+  type: 'Error'
+}
+[?25h
