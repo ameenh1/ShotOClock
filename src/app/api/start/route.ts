@@ -27,6 +27,7 @@ export async function POST(req: Request) {
         }
 
         const shotsRemaining = Math.round(pingsPerHour * totalHours);
+        const avgMinutes = 60 / pingsPerHour;
 
         // Insert one row per phone number, each with their own random first interval
         const inserts = phones.map(({ phone, carrier }) => {
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
                 status: 'active',
                 shots_remaining: shotsRemaining,
                 next_shot_time: nextShotTime.toISOString(),
+                avg_interval_minutes: avgMinutes,
             };
         });
 
